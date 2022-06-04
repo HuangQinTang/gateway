@@ -1,0 +1,56 @@
+definitions:
+  dto.AdminLoginInput:
+    properties:
+      password:
+        description: 密码
+        example: "123456"
+        type: string
+      username:
+        description: 账号
+        example: admin
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  middleware.Response:
+    properties:
+      data:
+        type: object
+      errmsg:
+        type: string
+      errno:
+        type: integer
+      stack:
+        type: object
+      trace_id:
+        type: object
+    type: object
+info:
+  contact: {}
+  license: {}
+paths:
+  /admin_login/login:
+    post:
+      consumes:
+      - application/json
+      description: 管理员登陆
+      operationId: /admin_login/login
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminLoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/middleware.Response'
+      summary: 管理员登陆
+      tags:
+      - 管理员接口
+swagger: "2.0"
