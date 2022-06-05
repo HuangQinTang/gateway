@@ -12,10 +12,15 @@ type ResponseCode int
 
 //1000以下为通用码，1000以上为用户自定义码
 const (
-	SuccessCode       ResponseCode = iota
-	UndefErrorCode                 //未知错误
-	ValidErrorCode                 //有效错误
-	InternalErrorCode              //非法错误（权限等）
+	SuccessCode            ResponseCode = iota
+	UndefErrorCode                      //未知错误
+	ValidErrorCode                      //已知错误（逻辑正确）
+	InternalErrorCode                   //非法错误（权限等）
+	VerifyErrorCode                     //参数校验错误
+	JsonTransformErrorCode              //json转换错误
+	MysqlQueryErrorCode                 //mysql查询报错
+	MysqlSaveErrorCode                  //mysql编辑报错
+	SessionErrorCode                    //session通用错误
 
 	InvalidRequestErrorCode ResponseCode = 401
 	CustomizeCode           ResponseCode = 1000

@@ -2,6 +2,7 @@ package dao
 
 import (
 	"gateway/dto"
+	"gateway/public"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -30,7 +31,12 @@ func (t *Admin) LoginCheck(c *gin.Context, tx *gorm.DB, param *dto.AdminLoginInp
 	if adminInfo.Id == 0 {
 		return nil, errors.New("用户信息不存在")
 	}
-	return nil, nil
+	//加盐，验证密码
+	saltPassword := public.GenSaltPassword(adminInfo.Salt, param.Password)
+	if adminInfo.Password != saltPassword {
+		return nil, errors.New("密码错误，请重新输入")
+	}
+	return adminInfo, nil
 }
 
 func (t *Admin) Find(c *gin.Context, tx *gorm.DB, search *Admin) (*Admin, error) {
@@ -40,4 +46,8 @@ func (t *Admin) Find(c *gin.Context, tx *gorm.DB, search *Admin) (*Admin, error)
 		return nil, err
 	}
 	return out, nil
+}
+
+func (t *Admin) Save(c *gin.Context, tx *gorm.DB) error {
+	return tx.WithContext(c).Save(t).Error
 }

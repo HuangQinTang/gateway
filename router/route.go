@@ -4,6 +4,7 @@ import (
 	"gateway/controller"
 	"gateway/docs"
 	"gateway/middleware"
+	"gateway/public"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -75,14 +76,17 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	})
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	//登陆、注册路由组
-	adminLoginRouter := router.Group("/admin_login")
+	//配置seesion客户端
 	store, err := sessions.NewRedisStore(10, "tcp", lib.GetStringConf("base.session.redis_server"), lib.GetStringConf("base.session.redis_password"), []byte("secret"))
 	if err != nil {
 		log.Fatalf("sessions.NewRedisStore err:%v", err)
 	}
+	//store.Options(sessions.Options{MaxAge: 100})
+
+	//登陆、退出(不需要验证session)
+	adminLoginRouter := router.Group("/admin_login")
 	adminLoginRouter.Use(
-		sessions.Sessions("mysession", store),
+		sessions.Sessions(public.ClientSessionInfoKey, store),
 		middleware.RecoveryMiddleware(),    //错误处理
 		middleware.RequestLog(),            //请求链路
 		middleware.TranslationMiddleware()) //参数验证、翻译
@@ -90,5 +94,18 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		controller.AdminLoginRegister(adminLoginRouter)
 	}
 
+	//-----以下验证session-----
+
+	//查询用户信息，修改密码
+	adminRouter := router.Group("/admin")
+	adminRouter.Use(
+		sessions.Sessions(public.ClientSessionInfoKey, store),
+		middleware.RecoveryMiddleware(),
+		middleware.RequestLog(),
+		middleware.SessionAuthMiddleware(),
+		middleware.TranslationMiddleware())
+	{
+		controller.AdminRegister(adminRouter)
+	}
 	return router
 }
