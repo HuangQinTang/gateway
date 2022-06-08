@@ -69,6 +69,7 @@ func (adminlogin *AdminLoginController) AdminLogin(c *gin.Context) {
 
 	out := dto.AdminLoginOutput{Token: admin.UserName}
 	middleware.ResponseSuccess(c, out)
+	return
 }
 
 // AdminLogin godoc
@@ -87,4 +88,5 @@ func (adminlogin *AdminLoginController) AdminLoginOut(c *gin.Context) {
 		middleware.ResponseError(c, middleware.SessionErrorCode, err)
 	}
 	middleware.ResponseSuccess(c, "")
+	return
 }

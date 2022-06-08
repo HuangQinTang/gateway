@@ -47,6 +47,7 @@ func (adminlogin *AdminController) AdminInfo(c *gin.Context) {
 		Roles:        []string{"admin"},
 	}
 	middleware.ResponseSuccess(c, out)
+	return
 }
 
 // ChangePwd godoc
@@ -87,7 +88,7 @@ func (adminlogin *AdminController) ChangePwd(c *gin.Context) {
 		return
 	}
 	adminInfo := &dao.Admin{}
-	adminInfo, err = adminInfo.Find(c, tx, (&dao.Admin{UserName: adminSessionInfo.UserName}))
+	adminInfo, err = adminInfo.Find(c, tx, &dao.Admin{UserName: adminSessionInfo.UserName, IsDelete: 0})
 	if err != nil {
 		middleware.ResponseError(c, middleware.MysqlQueryErrorCode, err)
 		return
@@ -103,4 +104,5 @@ func (adminlogin *AdminController) ChangePwd(c *gin.Context) {
 		return
 	}
 	middleware.ResponseSuccess(c, "")
+	return
 }
