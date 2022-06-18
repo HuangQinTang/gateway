@@ -23,6 +23,7 @@ func (t *Admin) TableName() string {
 	return "gateway_admin"
 }
 
+// LoginCheck 登陆
 func (t *Admin) LoginCheck(c *gin.Context, tx *gorm.DB, param *dto.AdminLoginInput) (*Admin, error) {
 	adminInfo, err := t.Find(c, tx, &Admin{UserName: param.UserName, IsDelete: 0})
 	if err != nil {
